@@ -1,21 +1,22 @@
 const jwt=require('jsonwebtoken')
 
-const verify=(req,res,next)=>{
-    const authHeader=req.headers.authorization
-    if(authHeader){
-        const token=authHeader.split(" ")[1]
-        jwt.verify(token,process.env.token,(err,user)=>{
-            if(err){
-                return res.status(401).json("token is not valid")
-            }
-            req.user=user
-            next()
-        })
-
+const verifyToken=(req,res,next)=>{
+    const token=req.cookies.token
+    // console.log(token)
+    if(!token){
+        return res.status(401).json("You are not authenticated!")
     }
-    else{
-        res.status(401).json('you are not authenticated')
-    }
+    jwt.verify(token,process.env.SECRET,async (err,data)=>{
+        if(err){
+            return res.status(403).json("Token is not valid!")
+        }
+        
+        req.userId=data._id
+       
+        // console.log("passed")
+        
+        next()
+    })
 }
 
-module.exports=verify
+module.exports=verifyToken

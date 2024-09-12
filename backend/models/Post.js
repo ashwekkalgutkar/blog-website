@@ -14,20 +14,20 @@ const PostSchema=new mongoose.Schema({
     photo:{
         type:String,
         required:false,
+        
     },
     username:{
         type:String,
-        required:true,
+        required:true,  
     },
     userId:{
         type:String,
-        required:true,
+        required:true,  
     },
     categories:{
         type:Array,
-        required:false
-    }
+        
+    },
+},{timestamps:true})
 
-},{timestamps:true});
-
-module.exports=mongoose.model('Post',PostSchema);
+module.exports=mongoose.model("Post",PostSchema)

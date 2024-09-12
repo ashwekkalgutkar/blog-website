@@ -3,21 +3,20 @@ const mongoose=require('mongoose')
 const CommentSchema=new mongoose.Schema({
     comment:{
         type:String,
-        requried:true
+        required:true,
     },
     author:{
         type:String,
-        requried:true
+        required:true,
     },
     postId:{
         type:String,
-        required:true
+        required:true,
     },
     userId:{
         type:String,
         required:true
     }
+},{timestamps:true})
 
-},{timestamps:true});
-
-module.exports=mongoose.model('Commment',CommentSchema);
+module.exports=mongoose.model("Comment",CommentSchema)

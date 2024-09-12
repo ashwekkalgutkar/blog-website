@@ -1,43 +1,30 @@
 const express=require('express')
 const router=express.Router()
+const User=require('../models/User')
+const bcrypt=require('bcrypt')
+const Post=require('../models/Post')
 const Comment=require('../models/Comment')
-const verify=require('../verifyToken')
+const verifyToken = require('../verifyToken')
 
-
-//CREATE POST
-router.post('/create',async(req,res)=>{
-    const newComment=new Comment(req.body)
+//CREATE
+router.post("/create",verifyToken,async (req,res)=>{
     try{
+        const newComment=new Comment(req.body)
         const savedComment=await newComment.save()
         res.status(200).json(savedComment)
-
     }
     catch(err){
         res.status(500).json(err)
     }
+     
 })
 
-//GET ALL POST DATA
-router.get("/all",async(req,res)=>{
+//UPDATE
+router.put("/:id",verifyToken,async (req,res)=>{
     try{
-
-        const posts=await Comment.find()
-        res.status(200).json(posts)
-
-    }
-    catch(err){
-        res.status(500).json(err)
-    }
-})
-
-//GET POST COMMENTS
-router.get("/post/:id",async(req,res)=>{
-    try{
-
-        const id=req.params.id
-        const comments=await Comment.find({postId:id})
-        res.status(200).json(comments)
-
+       
+        const updatedComment=await Comment.findByIdAndUpdate(req.params.id,{$set:req.body},{new:true})
+        res.status(200).json(updatedComment)
 
     }
     catch(err){
@@ -45,23 +32,14 @@ router.get("/post/:id",async(req,res)=>{
     }
 })
 
-//UPDATE POST
-router.put("/post/:id",async (req,res)=>{
-    try{
-        const updatedPost=await Post.findByIdAndUpdate(req.params.id,{$set:req.body},{new:true})
-        res.status(200).json(updatedPost)
-    }
-    catch(err){
-        res.status(500).json(err)
-    }
-})
 
-
-//DELETE COMMENT
-router.delete("/comment/:id",async (req,res)=>{
+//DELETE
+router.delete("/:id",verifyToken,async (req,res)=>{
     try{
         await Comment.findByIdAndDelete(req.params.id)
-        res.status(200).json('comment has been deleted')
+        
+        res.status(200).json("Comment has been deleted!")
+
     }
     catch(err){
         res.status(500).json(err)
@@ -69,26 +47,18 @@ router.delete("/comment/:id",async (req,res)=>{
 })
 
 
-//SEARCH POSTS
-router.get("/search/:postPrompt",async (req,res)=>{
-    try{
-        
-        const posts=await Post.find({
-            "$or":[
-                {"title":{$regex:req.params.postPrompt},
-                "desc":{$regex:req.params.postPrompt},
-            
-            }
-            ]
-        })
-        res.status(200).json(posts)
 
+
+//GET POST COMMENTS
+router.get("/post/:postId",async (req,res)=>{
+    try{
+        const comments=await Comment.find({postId:req.params.postId})
+        res.status(200).json(comments)
     }
     catch(err){
-        res.status(404).json(err)
+        res.status(500).json(err)
     }
 })
-
 
 
 module.exports=router
